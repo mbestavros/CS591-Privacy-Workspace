@@ -9,6 +9,7 @@ from scipy.linalg import hadamard
 from scipy.spatial.distance import hamming
 from scipy.stats import truncnorm
 import math
+import matplotlib.pyplot as plt
 
 # Actually run the Hadamard attack. The algorithm follows the setup described in Problem 1a.
 def hadamard_attack(n, sigma):
@@ -41,5 +42,33 @@ def run_hadamard_attacks(n, sigma):
     # Compute and return mean and standard deviation of results.
     return (np.mean(results), np.std(results))
 
-n = 16
-print(run_hadamard_attacks(n, .5))
+# Run the mean/stdev code for different settings, and graph the results.
+def run_settings_and_plot():
+    # Possible values for n
+    n = [128,512,2048,8192]
+    
+    # Store the data in axes
+    x_axis = []
+    y_axis = []
+    error = []
+    
+    # Compute for smaller values of sigma until a combination is found that achieves perfection.
+    for i in n:
+        print("Now testing n =", i)
+        power = 1
+        while(True):
+            sigma = 1.0/2**power
+            results = run_hadamard_attacks(i,sigma)
+            x_axis += ["{0}, {1}".format(i, sigma)]
+            y_axis += [results[0]]
+            error += [results[1]]
+            if(results[0] == 0 or results[1] == 0):
+                break
+            power += 1
+            if(1.0/2**power < 1/math.sqrt(32*i)):
+                break
+    plt.errorbar(range(len(x_axis)), y_axis, error, linestyle='None', marker='o', capsize=6)
+    plt.xticks(range(len(x_axis)), x_axis, rotation=90)
+    plt.show()
+            
+run_settings_and_plot()
