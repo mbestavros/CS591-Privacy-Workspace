@@ -29,14 +29,17 @@ def hadamard_attack(n, sigma):
     
     x_hat = [0 if i < .5 else 1 for i in z]
     
-    print(x_hat, x)
-    
     return (x_hat, x)
  
-# Run the Hadamard attack once and return the Hamming distance parameter (specified in Problem 1).
-def run_hadamard_attack_once(n, sigma):
-    results = hadamard_attack(n, sigma)
-    return hamming(results[0], results[1])/n
+# Run the Hadamard attack twenty times and compute relevant statistics (Hamming distance, specified in Problem 1, and mean/stdev of combined results).
+def run_hadamard_attacks(n, sigma):
+    results = []
+    # Run the Hadamard attack 20 times, recording the results for each run.
+    for i in range(20):
+        hadamard_result = hadamard_attack(n, sigma)
+        results += [hamming(hadamard_result[0], hadamard_result[1])/n]
+    # Compute and return mean and standard deviation of results.
+    return (np.mean(results), np.std(results))
 
 n = 16
-print(run_hadamard_attack_once(n, .5))
+print(run_hadamard_attacks(n, .5))
