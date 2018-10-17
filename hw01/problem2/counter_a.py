@@ -8,7 +8,7 @@ import numpy as np
 from scipy.spatial.distance import hamming
 import matplotlib.pyplot as plt
 
-# Implementation of the counter attack scenario, as outlined in problem 2.
+# Implementation of the counter attack scenario, as outlined in problem 2a.
 def counter_attack(n):
     # Generate x, random in {0,1}, that represents which users clicked on the ad.
     x = np.random.randint(2, size=n)
@@ -19,10 +19,16 @@ def counter_attack(n):
     a_i_previous = 0
     
     for i in range(1,len(x)):
+        # If we can figure out what the fuzzed bit for this iteration is, we will keep it to help us in the next one.
         fuzzed_bit = None
+        
+        # Run the release function.
         a_i = a(x, i)
+        
+        # The crux of the attack is going to focus on the difference between the current and previous iterations of the release function.
         difference = a_i - a_i_previous
         
+        # The obvious cases: when the difference goes down, or increases by 2, we can know for certain what both the actual bit and the fuzzed bit are. We can also infer what the previous iteration's values were.
         if(difference == -1):
             reconstructed_x[i-1] = 0
             reconstructed_x += [0]
@@ -31,8 +37,12 @@ def counter_attack(n):
             reconstructed_x[i-1] = 1
             reconstructed_x += [1]
             fuzzed_bit = 1
+        
+        # If not an extreme, the difference will be either 0 or 1; we cannot make claims outright about those values, but we can infer things if we knew what the previous iteration's fuzzed bit was.
+        # If we don't know the fuzzed bit, we have to make a guess.
         elif(previous_fuzzed_bit is None):
             reconstructed_x += [difference]
+        # If we do have a previous fuzzed bit, we can infer about values in some, but not all, cases. All the exceptions will be, again, guesses.
         elif(difference == 0):
             if(previous_fuzzed_bit == 0):
                 reconstructed_x += [0]
@@ -45,10 +55,14 @@ def counter_attack(n):
             elif(previous_fuzzed_bit == 1):
                 reconstructed_x += [1]
                 fuzzed_bit = 1
+                
+        # Pass on the fuzzed bit to the next iteration.
         previous_fuzzed_bit = fuzzed_bit
+        
+        # Pass on the current value of the release function to the next iteration.
         a_i_previous = a_i
         
-    return (reconstructed_x, x)    
+    return (reconstructed_x, x)
  
 # Implementation of the release function: a random bit added to the running sum of bits in x.
 def a(x, i):
@@ -77,7 +91,6 @@ def run_settings_and_plot():
     y_axis = []
     error = []
     
-    # Compute for smaller values of sigma until a combination is found that achieves perfection.
     for i in n:
         print("Now testing n =", i)
         results = run_counter_attacks(i)
