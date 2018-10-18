@@ -12,7 +12,7 @@ import math
 import matplotlib.pyplot as plt
 
 
-# Actually run the random query attack. The algorithm follows the setup described in Problem 1a.
+# Actually run the random query attack. The algorithm follows the setup described in Problem 1b.
 def random_query_attack(n, sigma, m):
     # Generate x, a random bit array of size n.
     x = np.random.randint(2, size=n)
@@ -34,10 +34,10 @@ def random_query_attack(n, sigma, m):
     
     return (x_hat, x)
  
-# Run the Hadamard attack twenty times and compute relevant statistics (Hamming distance, specified in Problem 1, and mean/stdev of combined results).
+# Run the attack twenty times and compute relevant statistics (Hamming distance, specified in Problem 1, and mean/stdev of combined results).
 def run_random_query_attacks(n, sigma, m):
     results = []
-    # Run the Hadamard attack 20 times, recording the results for each run.
+    # Run the attack 20 times, recording the results for each run.
     for i in range(20):
         hadamard_result = random_query_attack(n, sigma, m)
         results += [hamming(hadamard_result[0], hadamard_result[1])/n]
@@ -54,7 +54,7 @@ def run_settings_and_plot():
     y_axis = []
     error = []
     
-    # Compute for smaller values of sigma until a combination is found that achieves perfection.
+    # Compute for smaller values of sigma and different values of m.
     for i in n:
         print("Now testing n =", i)
         m = [int(1.1*i), int(4*i), int(16*i)]
@@ -69,6 +69,7 @@ def run_settings_and_plot():
                     break
                 if(1.0/2**power < 1/math.sqrt(32*i)):
                     break
+    # Graph the final result.
     plt.errorbar(range(len(x_axis)), y_axis, error, linestyle='None', marker='o', capsize=6)
     plt.xticks(range(len(x_axis)), x_axis, rotation=90)
     plt.show()
