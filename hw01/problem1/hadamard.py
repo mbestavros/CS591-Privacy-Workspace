@@ -67,6 +67,7 @@ def run_settings_and_plot():
             power += 1
             if(1.0/2**power < 1/math.sqrt(32*i)):
                 break
+    # Graph the final result.
     plt.errorbar(range(len(x_axis)), y_axis, error, linestyle='None', marker='o', capsize=6)
     plt.xticks(range(len(x_axis)), x_axis, rotation=90)
     plt.show()
